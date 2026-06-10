@@ -1,90 +1,76 @@
+// detect a cycle in an undirected graph using BFS
+
 #include<iostream>
-#include<climits>
 using namespace std;
 
-void bfs(vector<vector<int>> &oranges,vector<vector<int>> &vis,queue<pair<pair<int,int>,int>> &q,int &maxTime){
+bool detect(int src, vector<int> adj[],vector<int> &vis, queue<pair<int,int>> &q){
 
-    int delRow[4] = {-1,0,1,0};
-    int delCol[4] = {0,1,0,-1};
-
-    int n = oranges.size();
-    int m = oranges[0].size();
-
+    vis[src] = 1;
+    q.push({src,-1});
+    
     while(!q.empty()){
 
-        int r = q.front().first.first;
-        int c = q.front().first.second;
-        int t = q.front().second;
+        int currNode = q.front().first;
+        int parent = q.front().second;
 
-        maxTime = max(maxTime,t);
         q.pop();
 
-        for(int i=0;i<4;i++){
+        for(auto adjacentNode : adj[currNode]){
 
-            int newRow = r + delRow[i];
-            int newCol = c + delCol[i];
-
-            if(
-                (newRow >= 0 && newRow < n && newCol >= 0 && newCol < m)&&
-                (vis[newRow][newCol] != 2 && oranges[newRow][newCol] == 1)
-            ){
-                q.push({{newRow,newCol},t+1});
-                vis[newRow][newCol] = 2;
+            if(vis[adjacentNode] == 0){
+                vis[adjacentNode] = 1;
+                q.push({adjacentNode,currNode});
+            }
+            else if(adjacentNode != parent){ // this is the case of cycle if the node is visited and it is not the parent 
+                return true;
             }
         }
     }
+
+    return false;
+    
 }
 
-int time(vector<vector<int>> &oranges){
+bool cycle(int n, vector<int> adj[]){
 
-    int n = oranges.size();
-    int m = oranges[0].size();
+    vector<int> vis(n+1,0);
+    queue<pair<int,int>> q;
 
-    vector<vector<int>> vis(n,vector<int>(m));
+    for(int i=1;i<=n;i++){
 
-    queue<pair<pair<int,int>,int>> q;
-
-    for(int i=0;i<n;i++){
-
-        for(int j=0;j<m;j++){
-
-            if(oranges[i][j] == 2){
-                q.push({{i,j},0});
-                vis[i][j] = 2;
-            }
-            else{
-                vis[i][j] = 0;
+        if(!vis[i]){
+            if(detect(i,adj,vis,q)){
+                return true;
             }
         }
     }
-
-    int maxTime = 0;
-
-    bfs(oranges,vis,q,maxTime);
-
-    for(int i=0;i<n;i++){
-        for(int j=0;j<m;j++){
-
-            if(oranges[i][j] == 1 && vis[i][j] != 2){
-                return -1;
-            }
-        }
-    }
-
-    return maxTime;
+    return false;
 
 }
 int main(){
 
-    vector<vector<int>> oranges = {
-        {0,1,2},
-        {0,1,2},
-        {2,1,1}
-    };
+    cout<<"No. of vertices & edges : ";
+    int n,m;
+    cin>>n>>m;
 
-    int rottenTime = time(oranges);
+    vector<int> adj[n+1]; // if 1 based indexing
 
-    cout<<"Rotten time is : "<<rottenTime;
+    for(int i=0;i<m;i++){
 
+        int u,v;
+        cin>>u>>v;
 
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+
+    }
+    
+    if(cycle(n,adj)){
+        cout<<"Cycle Detected";
+    }
+    else{
+        cout<<"Cycle not found";
+    }
+
+     
 }
