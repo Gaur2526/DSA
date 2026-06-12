@@ -67,7 +67,7 @@ int main(){
         for(int col = 0;col<m;col++){
 
             if(vis[row][col] == 0 && grid[row][col] == '1'){
-                noOfIslands++;
+                noOfIslands++; // when the starting point is changing the count increases
                 bfs(row,col,grid,vis);
             }
         }
