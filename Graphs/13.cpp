@@ -9,13 +9,14 @@ bool detect(int node,int parent,vector<int> adj[], vector<int> &vis){
 
     for(auto adjacentNode : adj[node]){
 
+        // if the adjacent node is not visited 
         if(!vis[adjacentNode]){
 
             if(detect(adjacentNode,node,adj,vis)){
                 return true;
             }
         }
-        else if(adjacentNode != parent){
+        else if(adjacentNode != parent){ // visited an not a parent
             return true;
         }
     }
