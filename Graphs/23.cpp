@@ -1,4 +1,4 @@
-// Topological Sort using BFS
+// Topological Sort using BFS(Kahn's Algorithm)
 
 #include<iostream>
 using namespace std;
